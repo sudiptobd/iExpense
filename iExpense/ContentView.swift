@@ -24,30 +24,41 @@ struct SecondView: View {
     }
 }
 
+struct ExpenseItem: Identifiable {
+    let id = UUID()
+    let name: String
+    let type: String
+    let amount: Double
+}
+
+@Observable
+class Expense: ObservableObject {
+    var items = [ExpenseItem]()
+}
+
 struct ContentView: View {
-    @State private var user = User(firstName: "Taylor", lastName: "Swift")
+    @State private var expenses = Expense()
     
     var body: some View {
-        Button("Save User") {
-            let encoder = JSONEncoder()
-            if let data = try? encoder.encode(user) {
-                UserDefaults.standard.set(data, forKey: "user")
+        NavigationStack {
+            List {
+                ForEach(expenses.items) {
+                    Text($0.name)
+                }
+                .onDelete(perform: removeItems)
             }
-        }
-        
-        Text("User is \(user.firstName) \(user.lastName)")
-        
-        Button("Load User") {
-            if let data = UserDefaults.standard.data(forKey: "user") {
-                let decoder = JSONDecoder()
-                if var loadedUser = try? decoder.decode(User.self, from: data) {
-                    loadedUser.firstName = "Sudipto"
-                    user = loadedUser
+            .navigationTitle("iExpense")
+            .toolbar {
+                Button("Add Expense", systemImage: "plus") {
+                    let expense = ExpenseItem(name: "Test", type: "Personal", amount: 5)
+                    expenses.items.append(expense)
                 }
             }
         }
-        
-        
+    }
+    
+    func removeItems(at offsets: IndexSet) {
+        expenses.items.remove(atOffsets: offsets)
     }
 }
 
