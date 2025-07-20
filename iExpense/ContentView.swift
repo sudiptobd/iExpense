@@ -26,34 +26,13 @@ struct SecondView: View {
 }
 
 struct ContentView: View {
-    @State private var numbers = [Int]()
-    @State private var currentNumber = 1
+    @AppStorage("tap") private var tapCount = 0
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                List {
-                    ForEach(numbers, id: \.self) { number in
-                        Text("Row \(number)")
-                    }
-                    .onDelete(perform: removeRows)
-                }
-                
-                Button("Add Number") {
-                    numbers.append(currentNumber)
-                    currentNumber += 1
-                }
-            }
-            .toolbar {
-                EditButton()
-            }
+        Button("Tap Count \(tapCount)") {
+            tapCount += 1
+            UserDefaults.standard.set(tapCount, forKey: "tap")
         }
-    }
-        
-    
-    
-    func removeRows(at offsets: IndexSet) {
-        numbers.remove(atOffsets: offsets)
     }
 }
 
