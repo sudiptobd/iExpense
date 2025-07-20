@@ -26,23 +26,34 @@ struct SecondView: View {
 }
 
 struct ContentView: View {
-    @State private var user = User()
-    @State private var showingSheet = false
+    @State private var numbers = [Int]()
+    @State private var currentNumber = 1
     
     var body: some View {
-        Button("Show Sheet") {
-            showingSheet.toggle()
+        NavigationStack {
+            VStack {
+                List {
+                    ForEach(numbers, id: \.self) { number in
+                        Text("Row \(number)")
+                    }
+                    .onDelete(perform: removeRows)
+                }
+                
+                Button("Add Number") {
+                    numbers.append(currentNumber)
+                    currentNumber += 1
+                }
+            }
+            .toolbar {
+                EditButton()
+            }
         }
-        .sheet(isPresented: $showingSheet) {
-            SecondView(name: user.firstName)
-        }
+    }
         
-        VStack {
-            Text("Your name is \(user.firstName) \(user.lastName)")
-            TextField("First Name", text: $user.firstName)
-            TextField("last Name", text: $user.lastName)
-        }
-        .padding()
+    
+    
+    func removeRows(at offsets: IndexSet) {
+        numbers.remove(atOffsets: offsets)
     }
 }
 
